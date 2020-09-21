@@ -1,8 +1,26 @@
 #include <stdio.h>
 
+int contar_acertos(int i,int nums_sorteados[6],int apostas[][60]){
+    int j;
+    int contador = 0;
+    for(j = 0;j<6;j++){
+        if (apostas[i][nums_sorteados[j]-1] == 1){
+            contador ++;
+        }
+    }
+    return contador;
+}
+
+void anunciar_premiados(double premio,int pedacos_do_premio[6],int quant_acertos[1000],int quant_de_apostas_por_acerto[6],int quant_apostas){
+    int i;
+    for (i = 0; i <quant_apostas;i++){
+        printf("%.2lf\n",premio*pedacos_do_premio[quant_acertos[i]-1]/100/quant_de_apostas_por_acerto[quant_acertos[i]-1]);
+    }
+}
+
 
 int main(){
-    int quant_apostas,apostas[1000][60],nums_sorteados[6],quant_acertos[1000],contador;
+    int quant_apostas,apostas[1000][60],nums_sorteados[6],quant_acertos[1000];
     int i,j;
     double premio;
 
@@ -18,28 +36,16 @@ int main(){
 
 
     for (i = 0;i<quant_apostas;i++){
-        contador = 0;
-        for(j = 0;j<6;j++){
-            if (apostas[i][nums_sorteados[j]-1] == 1){
-                contador ++;
-            }
-        }
-        quant_acertos[i] = contador;
+        quant_acertos[i] = contar_acertos(i,nums_sorteados,apostas);
     }
 
     int quant_de_apostas_por_acerto[6];
 
-
-
     for (i = 0; i <quant_apostas;i++){
         quant_de_apostas_por_acerto[quant_acertos[i]-1]++;
     }
-    int divisoes_do_premio[6] = {0,0,0,19,19,62};
+    int pedacos_do_premio[6] = {0,0,0,19,19,62};
 
-
-    for (i = 0; i <quant_apostas;i++){
-            /*printf("%d %d %d\n",divisoes_do_premio[quant_acertos[i]-1],quant_de_apostas_por_acerto[quant_acertos[i]-1],quant_acertos[i]-1); */
-            printf("%.2lf\n",premio*divisoes_do_premio[quant_acertos[i]-1]/100/quant_de_apostas_por_acerto[quant_acertos[i]-1]);
-    }
-
+    anunciar_premiados(premio,pedacos_do_premio,quant_acertos,quant_de_apostas_por_acerto,quant_apostas);
+        
 }
