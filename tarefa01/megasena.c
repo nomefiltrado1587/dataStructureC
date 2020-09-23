@@ -11,6 +11,7 @@ void receber_entrada(int quant_apostas,int apostas[][60],int nums_sorteados[]){
 }
 
 void contar_acertos(int quant_acertos[1000],int nums_sorteados[6],int apostas[][60],int quant_apostas){
+    // CONTA QUANTOS ACERTOS CADA JOGADOR FEZ E OS ARMAZENA EM "quant_acertos"
     int i,j;
     int contador;
     for (i = 0;i<quant_apostas;i++){
@@ -33,13 +34,15 @@ int main(){
 
     contar_acertos(quant_acertos,nums_sorteados,apostas,quant_apostas);
 
-    int quant_de_apostas_por_acertos[7]={0,0,0,0,0,0,0};
+    int quant_de_apostas_por_acertos[7]={0,0,0,0,0,0,0}; 
+    /*  é a quantidade de apostas que tiveram determinada quantidade de acertos
+    exmp: quant_de_apostas_por_acerto[3] == 5 <-> 5 apostas tiveram exatamente 3 acertos      */
     int i;
     for (i = 0; i <quant_apostas;i++)
         quant_de_apostas_por_acertos[quant_acertos[i]]++;
 
     double porcentagens_do_premio[7] = {0,0,0,0,0.19,0.19,0.62};
-    double premio_atual;
+    double premio_atual; // a bolada que cada um irá ganhar
     for (i = 0; i <quant_apostas;i++){
         premio_atual = premio*porcentagens_do_premio[quant_acertos[i]]/quant_de_apostas_por_acertos[quant_acertos[i]];
         printf("%.2lf\n",premio_atual);
