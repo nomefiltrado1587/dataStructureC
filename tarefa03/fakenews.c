@@ -102,7 +102,7 @@ void relatorio(int N,Noticia *noticias){
     printf("\n");
     printf("RESULTADO:\n");
     for (i = 0; i< qt_tipos_de_noticia;i++){
-        printf("%s (%d): ",(tipos_de_noticias+25*i),quantidades_de_noticias[i]);
+        printf("%s (%d): ",tipos_de_noticias+25*i,quantidades_de_noticias[i]);
         for(j=0;j<N;j++){
             if((noticias+j)->tipo == i){
                 printf("%s ",(noticias+j)->nome);
