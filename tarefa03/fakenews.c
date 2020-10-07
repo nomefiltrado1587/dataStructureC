@@ -10,7 +10,7 @@ typedef struct noticia{
 
 typedef struct tipo_de_noticia{
     char *nome;
-    int quantidade;
+    int quantidade ;
 }Tipo_de_noticia;
 
 void receber_noticia(int M,Noticia *noticia){
@@ -73,6 +73,7 @@ void relatorio(int N,Noticia *noticias){
     tipos_de_noticias = malloc(qt_tipos_de_noticia*sizeof(Tipo_de_noticia));
 
     for (i=0;i<qt_tipos_de_noticia;i++){
+        (tipos_de_noticias+i)->quantidade = 0;
         (tipos_de_noticias+i)->nome = malloc(20*sizeof(char));
     }
 
