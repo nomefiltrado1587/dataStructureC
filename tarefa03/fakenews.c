@@ -67,6 +67,7 @@ void relatorio(int N,Noticia *noticias){
 
 
     quantidades_de_noticias = malloc(qt_tipos_de_noticia*sizeof(int));
+
     tipos_de_noticias = malloc(qt_tipos_de_noticia*sizeof(char*));
 
     for (i=0;i<qt_tipos_de_noticia;i++){
@@ -108,7 +109,7 @@ void relatorio(int N,Noticia *noticias){
     printf("RESULTADO:\n");
     for (i = 0; i< qt_tipos_de_noticia;i++){
         printf("%s (%d): ",*(tipos_de_noticias+i),quantidades_de_noticias[i]);
-        free(quantidades_de_noticias);
+
         for(j=0;j<N;j++){
             if((noticias+j)->tipo == i){
                 printf("%s ",(noticias+j)->nome);
@@ -116,6 +117,8 @@ void relatorio(int N,Noticia *noticias){
         }
         printf("\n");
     }
+    
+    free(quantidades_de_noticias);
 
     for (i = 0;i<qt_tipos_de_noticia;i++){
         free(tipos_de_noticias[i]);
