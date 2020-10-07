@@ -64,7 +64,7 @@ void string(char *inicio,char str[]){
 void relatorio(int N,Noticia *noticias){
     int i,j;
 
-    int quantidades_de_noticias[5];
+    int quantidades_de_noticias[5] = {0,0,0,0,0};
 
     for (i=0;i<N;i++){
         if ((noticias+i)->media >= 60 ){
@@ -101,7 +101,7 @@ void relatorio(int N,Noticia *noticias){
     }
     printf("\n");
 
-    printf("Surpreendente (%d): ",*(quantidades_de_noticias[1]);
+    printf("Surpreendente (%d): ",(quantidades_de_noticias[1]));
     for(j=0;j<N;j++){
         if((noticias+j)->tipo == 1){
             printf("%s ",(noticias+j)->nome);
@@ -109,7 +109,7 @@ void relatorio(int N,Noticia *noticias){
     }
     printf("\n");
 
-    printf("Normal (%d): ",*(quantidades_de_noticias[2]);
+    printf("Normal (%d): ",(quantidades_de_noticias[2]));
     for(j=0;j<N;j++){
         if((noticias+j)->tipo == 2){
             printf("%s ",(noticias+j)->nome);
@@ -117,7 +117,7 @@ void relatorio(int N,Noticia *noticias){
     }
     printf("\n");
 
-    printf("Local (%d): ",*(quantidades_de_noticias[3]);
+    printf("Local (%d): ",(quantidades_de_noticias[3]));
     for(j=0;j<N;j++){
         if((noticias+j)->tipo == 3){
             printf("%s ",(noticias+j)->nome);
@@ -125,7 +125,7 @@ void relatorio(int N,Noticia *noticias){
     }
     printf("\n");
 
-    printf("Irrelevante (%d): ",*(quantidades_de_noticias[4]);
+    printf("Irrelevante (%d): ",(quantidades_de_noticias[4]));
     for(j=0;j<N;j++){
         if((noticias+j)->tipo == 4){
             printf("%s ",(noticias+j)->nome);
