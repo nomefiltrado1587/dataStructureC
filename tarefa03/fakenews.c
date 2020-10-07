@@ -62,9 +62,9 @@ void string(char *inicio,char str[]){
 }
 
 void relatorio(int N,Noticia *noticias){
-    int i,j,qt_tipos_de_noticia = 5, *quantidades_de_noticias;
+    int i,j,qt_tipos_de_noticia = 5;
 
-    quantidades_de_noticias = malloc(qt_tipos_de_noticia*sizeof(int));
+    int quantidades_de_noticias[5];
 
     for (i=0;i<N;i++){
         if ((noticias+i)->media >= 60 ){
