@@ -116,6 +116,10 @@ void relatorio(int N,Noticia *noticias){
         printf("\n");
     }
 
+    for (i = 0;i<qt_tipos_de_noticia;i++){
+        free(tipos_de_noticias[i]);
+    }
+
     free(tipos_de_noticias);
 }
 
