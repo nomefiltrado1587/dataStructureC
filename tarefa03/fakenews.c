@@ -62,7 +62,7 @@ void string(char *inicio,char str[]){
 }
 
 void relatorio(int N,Noticia *noticias){
-    int i,j,qt_tipos_de_noticia = 5;
+    int i,j;
 
     int quantidades_de_noticias[5];
 
@@ -133,8 +133,6 @@ void relatorio(int N,Noticia *noticias){
     }
     printf("\n");
     
-
-    free(quantidades_de_noticias);
 }
 
 int main(){
