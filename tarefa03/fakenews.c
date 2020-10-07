@@ -63,21 +63,8 @@ void string(char *inicio,char str[]){
 
 void relatorio(int N,Noticia *noticias){
     int i,j,qt_tipos_de_noticia = 5, *quantidades_de_noticias;
-    char **tipos_de_noticias;
 
     quantidades_de_noticias = malloc(qt_tipos_de_noticia*sizeof(int));
-
-    tipos_de_noticias = malloc(qt_tipos_de_noticia*sizeof(char*));
-
-    for (i=0;i<qt_tipos_de_noticia;i++){
-        *(tipos_de_noticias+i) = malloc(20*sizeof(char));
-    }
-
-    string(*(tipos_de_noticias + 0),"Bot");
-    string(*(tipos_de_noticias + 1),"Surpreendente");
-    string(*(tipos_de_noticias + 2),"Normal");
-    string(*(tipos_de_noticias + 3),"Local");
-    string(*(tipos_de_noticias + 4),"Irrelevante");
 
     for (i=0;i<N;i++){
         if ((noticias+i)->media >= 60 ){
@@ -106,18 +93,48 @@ void relatorio(int N,Noticia *noticias){
     }
     printf("\n");
     printf("RESULTADO:\n");
-    for (i = 0; i< qt_tipos_de_noticia;i++){
-        printf("%s (%d): ",*(tipos_de_noticias+i),quantidades_de_noticias[i]);
-        for(j=0;j<N;j++){
-            if((noticias+j)->tipo == i){
-                printf("%s ",(noticias+j)->nome);
-            }
+    printf("Bot (%d): ",quantidades_de_noticias[0]);
+    for(j=0;j<N;j++){
+        if((noticias+j)->tipo == 0){
+            printf("%s ",(noticias+j)->nome);
         }
-        printf("\n");
     }
+    printf("\n");
+
+    printf("Surpreendente (%d): ",quantidades_de_noticias[1]);
+    for(j=0;j<N;j++){
+        if((noticias+j)->tipo == 1){
+            printf("%s ",(noticias+j)->nome);
+        }
+    }
+    printf("\n");
+
+    printf("Normal (%d): ",quantidades_de_noticias[2]);
+    for(j=0;j<N;j++){
+        if((noticias+j)->tipo == 2){
+            printf("%s ",(noticias+j)->nome);
+        }
+    }
+    printf("\n");
+
+    printf("Local (%d): ",quantidades_de_noticias[3]);
+    for(j=0;j<N;j++){
+        if((noticias+j)->tipo == 3){
+            printf("%s ",(noticias+j)->nome);
+        }
+    }
+    printf("\n");
+
+    printf("Irrelevante (%d): ",quantidades_de_noticias[4]);
+    for(j=0;j<N;j++){
+        if((noticias+j)->tipo == 4){
+            printf("%s ",(noticias+j)->nome);
+        }
+    }
+    printf("\n");
+    
 
     free(quantidades_de_noticias);
-    free(tipos_de_noticias);
 }
 
 int main(){
