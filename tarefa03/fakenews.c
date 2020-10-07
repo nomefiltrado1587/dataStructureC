@@ -8,6 +8,11 @@ typedef struct noticia{
     double media,desvio,menor,maior;
 } Noticia;
 
+typedef struct tipo_de_noticia{
+    char *nome;
+    int quantidade;
+}Tipo_de_noticia;
+
 void receber_noticia(int M,Noticia *noticia){
     int j;
     double valor_atual,media_atual,desvio_atual;
@@ -62,45 +67,42 @@ void string(char *inicio,char str[]){
 }
 
 void relatorio(int N,Noticia *noticias){
-    int i,j,qt_tipos_de_noticia = 5, *quantidades_de_noticias;
-    char **tipos_de_noticias;
+    Tipo_de_noticia *tipos_de_noticias;
+    int i,j,qt_tipos_de_noticia = 5;
 
-
-    quantidades_de_noticias = malloc(qt_tipos_de_noticia*sizeof(int));
-
-    tipos_de_noticias = malloc(qt_tipos_de_noticia*sizeof(char*));
+    tipos_de_noticias = malloc(qt_tipos_de_noticia*sizeof(Tipo_de_noticia));
 
     for (i=0;i<qt_tipos_de_noticia;i++){
-        *(tipos_de_noticias+i) = malloc(20*sizeof(char));
+        (tipos_de_noticias+i)->nome = malloc(20*sizeof(char));
     }
 
-    string(*(tipos_de_noticias + 0),"Bot");
-    string(*(tipos_de_noticias + 1),"Surpreendente");
-    string(*(tipos_de_noticias + 2),"Normal");
-    string(*(tipos_de_noticias + 3),"Local");
-    string(*(tipos_de_noticias + 4),"Irrelevante");
+    string((tipos_de_noticias + 0)->nome,"Bot");
+    string((tipos_de_noticias + 1)->nome,"Surpreendente");
+    string((tipos_de_noticias + 2)->nome,"Normal");
+    string((tipos_de_noticias + 3)->nome,"Local");
+    string((tipos_de_noticias + 4)->nome,"Irrelevante");
 
     for (i=0;i<N;i++){
         if ((noticias+i)->media >= 60 ){
             if ((noticias+i)->desvio >15){
-                quantidades_de_noticias[0] ++;
+                (tipos_de_noticias + 0)->quantidade ++;
                 (noticias+i)->tipo = 0;
             }else{
-                quantidades_de_noticias[1]++;
+                (tipos_de_noticias + 1)->quantidade ++;
                 (noticias+i)->tipo = 1;
             }
         }else{
             if((noticias+i)->maior >=80){
                 if((noticias+i)->menor >20){
-                    quantidades_de_noticias[2]++;
+                    (tipos_de_noticias + 2)->quantidade ++;
                     (noticias+i)->tipo = 2;
                 }else{
-                    quantidades_de_noticias[3]++;
+                    (tipos_de_noticias + 3)->quantidade ++;
                     (noticias+i)->tipo = 3;
 
                 }
             }else{
-                quantidades_de_noticias[4]++;
+                (tipos_de_noticias + 4)->quantidade ++;
                 (noticias+i)->tipo = 4;
             }
         }
@@ -108,7 +110,7 @@ void relatorio(int N,Noticia *noticias){
     printf("\n");
     printf("RESULTADO:\n");
     for (i = 0; i< qt_tipos_de_noticia;i++){
-        printf("%s (%d): ",*(tipos_de_noticias+i),quantidades_de_noticias[i]);
+        printf("%s (%d): ",(tipos_de_noticias+i)->nome,(tipos_de_noticias+i)->quantidade);
 
         for(j=0;j<N;j++){
             if((noticias+j)->tipo == i){
@@ -118,10 +120,9 @@ void relatorio(int N,Noticia *noticias){
         printf("\n");
     }
     
-    free(quantidades_de_noticias);
 
     for (i = 0;i<qt_tipos_de_noticia;i++){
-        free(tipos_de_noticias[i]);
+        free((tipos_de_noticias+i)->nome);
     }
 
     free(tipos_de_noticias);
