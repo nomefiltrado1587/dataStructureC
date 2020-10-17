@@ -19,6 +19,8 @@ void receber_entrada(int *q, Matriz *matriz){
 
     for (int i = 0; i< matriz->comprimento;i++){
         matriz->elementos[i] = malloc(matriz->largura*sizeof(char));
+    }
+    for (int i = 0; i< matriz->comprimento;i++){
         scanf(" %s",matriz->elementos[i]);
     }
 }
