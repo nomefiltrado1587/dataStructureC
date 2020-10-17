@@ -15,17 +15,13 @@ typedef struct ponto{
 
 void receber_entrada(int *q, Matriz *matriz){
     scanf("%d %d %d",&matriz->comprimento,&matriz->largura,q);
-    matriz->elementos = malloc(matriz->comprimento*sizeof(char*));
+    matriz->elementos = malloc(matriz->comprimento*sizeof(char *));
 
     for (int i = 0; i< matriz->comprimento;i++){
-        matriz->elementos[i] = malloc(matriz->largura*sizeof(char));
-        for (int j = 0;j<matriz->largura;j++){
-            matriz->elementos[i][j] = '\0';
-        }
-    }
-    for (int i = 0; i< matriz->comprimento;i++){
+        matriz->elementos[i] = malloc((matriz->largura+1)*sizeof(char));
         scanf(" %s",matriz->elementos[i]);
     }
+    
 }
 
 int verificar_pontos(int i, int j,int letra_atual,Ponto posicoes_ja_utilizadas[MAX_PALAVRA]){
