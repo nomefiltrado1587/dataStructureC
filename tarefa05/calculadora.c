@@ -154,7 +154,7 @@ p_no subtrair(Numero_grande num1,Numero_grande num2){
         }
 
         if (acabou2 == 0){
-            if(digito_atual2->dado==subtracao_atual){
+            if(digito_atual2->dado>subtracao_atual){
                 resultado->dado = (subtracao_atual + 10 - digito_atual2->dado);
                 subtracao_atual = -1;
             }else{
