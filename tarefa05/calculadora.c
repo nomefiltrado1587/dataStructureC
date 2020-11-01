@@ -145,7 +145,7 @@ p_no subtrair(Numero_grande num1,Numero_grande num2){
 
     while(acabou1 == 0){
         resultado = adicionar_elemento(resultado,0);
-
+        resultado = resultado->prox;
         subtracao_atual += digito_atual1->dado;
         if (digito_atual1->prox == inicial1){
             acabou1 = 1;
@@ -168,9 +168,11 @@ p_no subtrair(Numero_grande num1,Numero_grande num2){
             }
         }else{
             resultado->dado = subtracao_atual;
+            subtracao_atual = 0;
         }
-
     }
+
+    
     return resultado;
 
 
@@ -189,8 +191,17 @@ void realizar_operacao(){
         imprimir_lista_invertida(resultado);
     }
     if(tipo_operacao == '-'){
-        resultado =  subtrair(num1,num2);
-        imprimir_lista_invertida(resultado);
+        p_no dale = num1.digitos->prox;
+        int dado = dale->dado;
+        printf("%d",dado);
+        /*
+        if(dado == 0){
+            printf("0\n");
+        }else{
+            resultado =  subtrair(num1,num2);
+            imprimir_lista(resultado);
+        }
+        */
     }
     /*
     if(tipo_operacao == '*'){
