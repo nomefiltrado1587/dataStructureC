@@ -185,7 +185,7 @@ void realizar_operacao(){
     receber_numero(&num1);
     receber_numero(&num2);
 
-    p_no resultado;
+    p_no resultado = NULL;
     if(tipo_operacao == '+'){
         resultado = somar(num1,num2);
         imprimir_lista_invertida(resultado);
