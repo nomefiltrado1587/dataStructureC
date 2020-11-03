@@ -16,6 +16,7 @@ typedef struct Numero_grande{
 } Numero_grande;
 
 p_no adicionar_elemento(p_no lista,int dado){
+    // ADICIONA ELEMENTOS NA LISTA (CIRCULAR E DUPLA)
     p_no novo;
     novo = malloc(sizeof(No));
     novo->dado = dado;
@@ -34,6 +35,7 @@ p_no adicionar_elemento(p_no lista,int dado){
 }
 
 p_no remover_da_lista(p_no no){
+    //REMOVE ELEMENTO DA LISTA E RETORNA O ANTERIOR
     p_no ant = no->ant;
     (no->prox)->ant = no->ant;
     (no->ant)->prox = no->prox;
@@ -42,6 +44,7 @@ p_no remover_da_lista(p_no no){
 }
 
 void destruir_lista(p_no lista){
+    // DESTROI COMPLETAMENTE UMA LISTA -> SINISTRO
     p_no inicial = lista,aux;
     lista = lista->prox;
     while(lista != inicial){
@@ -53,6 +56,7 @@ void destruir_lista(p_no lista){
 }
 
 void imprimir_lista(p_no lista) {
+    // IMPRIME UMA LISTA LIGADA
     p_no inicial = lista;
     do{
         printf("%d",lista->dado);
@@ -62,6 +66,7 @@ void imprimir_lista(p_no lista) {
 }
 
 void armazenar_numero(char *numero,Numero_grande *num){
+    // OBTEM O COMPRIMENTO DO NUMERO E ARMAZENA SEUS DIGITOS (BASE DECIMAL) EM UMA LISTA LIGADA, "CONVERTENDO-OS" DE char PARA int
     int dado;
     for(int i = 0;numero[i] != '\0';i++){
         num->comprimento +=1;
@@ -71,6 +76,7 @@ void armazenar_numero(char *numero,Numero_grande *num){
 }
 
 void receber_numero(Numero_grande *num){
+    // INICIALIZA UM "NUMERO GRANDE" E ARMAZENA ELE COM armazenar_numero()
     char numero[25];
     num->digitos = NULL;
     num->comprimento = 0;
@@ -78,7 +84,22 @@ void receber_numero(Numero_grande *num){
     armazenar_numero(numero,num);
 }
 
+p_no remover_zeros(p_no digitos,int limite){
+    // REMOVE OS ZEROS DESNECESSÁRIOS (A ESQUERDA) DE UM NUMERO
+    for(int i = 0;i<limite;i++){
+        if(digitos->dado != 0 || digitos->prox == digitos){
+            break;
+        }else{
+            digitos = remover_da_lista(digitos);
+        }
+
+    }
+    return digitos;
+}
+
 p_no somar(Numero_grande num1, Numero_grande num2){
+    //SOMA DOIS NUMEROS E RETORNA UMA LISTA LIGADA COM O RESULTADO
+
     if(num2.comprimento>num1.comprimento){
         return somar(num2,num1);
     }
@@ -110,6 +131,7 @@ p_no somar(Numero_grande num1, Numero_grande num2){
 
 
 p_no subtrair(Numero_grande num1,Numero_grande num2){
+    //SUBTRAI DOIS NUMEROS E RETORNA UMA LISTA LIGADA COM O RESULTADO
     if(num2.comprimento>num1.comprimento){
         return subtrair(num2,num1);
     }
@@ -153,20 +175,14 @@ p_no subtrair(Numero_grande num1,Numero_grande num2){
         }
 
     }
-    for(int i = 0;i<num1.comprimento;i++){
-        if(resultado->dado != 0 || resultado->prox == resultado){
-            break;
-        }else{
-            resultado = remover_da_lista(resultado);
-        }
-
-    }
+    resultado = remover_zeros(resultado,num1.comprimento);
     return resultado;
 
 }
 
 
 p_no multiplicar(Numero_grande num1, Numero_grande num2){
+    //MULTIPLICA DOIS NUMEROS E RETORNA UMA LISTA LIGADA COM O RESULTADO
 
     p_no digito1 =num1.digitos->prox, digito2 = num2.digitos->prox;
     p_no resultado = NULL;
@@ -213,17 +229,16 @@ p_no multiplicar(Numero_grande num1, Numero_grande num2){
         }
     }
     resultado = inicial->ant;
-    for(int i = 0;i<2;i++){
-        if(resultado->dado == 0){
-            resultado =  remover_da_lista(resultado);
-        }
-    }
+    resultado = remover_zeros(resultado,2);
         
     
     return resultado;
 }
 
 void realizar_operacao(){
+    //RECEBE O TIPO DE OPERAÇÃO E OS NUMEROS E DA INICIO A OPERAÇÃO DESEJADA
+    //NAO FOI FEITA A DIVISAO (embora tenha dado vontade)
+
     char tipo_operacao;
     Numero_grande num1,num2;
     scanf(" %c",&tipo_operacao);
@@ -247,15 +262,14 @@ void realizar_operacao(){
     
     if(tipo_operacao == '/'){
         /*
-        dividir(num1,num2);
+        resultado = dividir(num1,num2);
+        imprimir_lista(resultado);
         */
     }else{
         destruir_lista(resultado);
     }
-    
     destruir_lista(num1.digitos);
     destruir_lista(num2.digitos);
-    
 }
 
 
