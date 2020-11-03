@@ -244,14 +244,17 @@ void realizar_operacao(){
         resultado =  multiplicar(num1,num2);
         imprimir_lista(resultado);
     }
-    /*
+    
     if(tipo_operacao == '/'){
+        /*
         dividir(num1,num2);
+        */
+    }else{
+        destruir_lista(resultado);
     }
-    */
+    
     destruir_lista(num1.digitos);
     destruir_lista(num2.digitos);
-    destruir_lista(resultado);
     
 }
 
