@@ -32,7 +32,6 @@ p_no_int adicionar_na_fila_int(p_no_int ant,int especialidade){
     if (ant != NULL){
         ant->prox = novo;
     }
-    novo->prox = NULL;
     novo->dado = especialidade;
     return novo;
 }
