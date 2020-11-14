@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #define MAX_NOME 50
 #define MAX_TIPO 15
 #define N_ESPECIALIDADES 9
@@ -171,14 +170,11 @@ void imprimir_pacientes(p_no_paciente filas[2*N_ESPECIALIDADES]){
 void adicionar_novas_consultas(Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS],p_no_paciente filas[2*N_ESPECIALIDADES]){
     int especialidade , i = 0;
     while(novas_consultas[i] != NULL){
-        //printf("AQUI %d %d\n",paciente_atual->atendimentos->dado,paciente_atual->prioritario);
         especialidade = novas_consultas[i]->atendimentos->dado;
         
-    
         p_no_int atendimento_atual = novas_consultas[i]->atendimentos;
         novas_consultas[i]->atendimentos = novas_consultas[i]->atendimentos->prox;
         free(atendimento_atual);
-        
         
         adicionar_na_fila_pac(novas_consultas[i],filas,especialidade);
         i+=1;
@@ -213,14 +209,6 @@ int main(){
         paciente_atual->atendimentos = receber_atendimentos(paciente_atual,&arquivo_nao_acabou,filas);
     }
     
-
-    /*
-    for(int i = 0;i<2*N_ESPECIALIDADES;i++){
-        if (filas[i] != NULL){
-        printf("%d %s\n",i,filas[i]->paciente->nome);
-        }
-    }*/
-    
     int medicos_por_especialidade[9] = {10,2,5,3,4,7,2,1,4};
     int relogio = 1;
     Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS];
@@ -230,14 +218,11 @@ int main(){
         for(int i = 0;i<N_ESPECIALIDADES;i++){
             for(int j = 0;j<medicos_por_especialidade[i];j++){
                 if(filas[2*i] != NULL){
-                    //imprimir_pacientes(filas);
-                    //printf("-//-//-\n");
                     atender_paciente(2*i,filas,relogio,&contador,novas_consultas);
                 }else{
                     break;
                 }
             }
-            //imprimir_lista(filas[16]);
         }
         novas_consultas[contador] = NULL;
 
