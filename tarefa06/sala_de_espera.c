@@ -27,6 +27,7 @@ typedef struct No_paciente * p_no_paciente;
 
 
 p_no_int adicionar_na_fila_int(p_no_int ant,int especialidade){
+    // ADICIONA UM INTEIRO EM UMA FILA DE INTEIROS
     p_no_int novo = malloc(sizeof(No_int));
     if (ant != NULL){
         ant->prox = novo;
@@ -37,6 +38,7 @@ p_no_int adicionar_na_fila_int(p_no_int ant,int especialidade){
 
 
 void adicionar_na_fila_pac(Paciente *paciente,p_no_paciente filas[2*N_ESPECIALIDADES],int especialidade){
+    // ADICIONA UM PACIENTE EM UMA DETERMINADA FILA DE PACIENTES
     p_no_paciente novo = malloc(sizeof(No_paciente));
     novo->paciente = paciente;
     if (filas[especialidade] == NULL){
@@ -56,6 +58,7 @@ void adicionar_na_fila_pac(Paciente *paciente,p_no_paciente filas[2*N_ESPECIALID
 }
 
 char *receber_nome(){
+    // RECEBE E ALOCA O NOME DO PACIENTE
     char letra_atual;
     int i = 0;
     char *nome = malloc(MAX_NOME*sizeof(char));
@@ -69,6 +72,7 @@ char *receber_nome(){
 }
 
 int receber_tipo(){
+    // RECEBE O TIPO DO PACIENTE, RETORNANDO 1 PARA PRIORITARIO E 0 PARA NORMAL
     char tipo[15];
     scanf(" %s",tipo);
     if (tipo[0] == 'n'){
@@ -78,13 +82,14 @@ int receber_tipo(){
 }
 
 p_no_int receber_atendimentos(Paciente *paciente_atual,int *arquivo_nao_acabou,p_no_paciente filas[2*N_ESPECIALIDADES]){
-
+    // RECEBE OS IDS DOS ATENDIMENTOS E CONFERE SE ACABOU O ARQUIVO
     char letra_atual;
     scanf(" %c ",&letra_atual);
     adicionar_na_fila_pac(paciente_atual,filas,2*(letra_atual-49));
 
     p_no_int no_atual = NULL, inicial=NULL;
     *arquivo_nao_acabou = scanf(" %c",&letra_atual);
+
     if(letra_atual != '"' && *arquivo_nao_acabou == 1 ){
         no_atual = adicionar_na_fila_int(no_atual,2*(letra_atual-49));
         inicial = no_atual;
@@ -101,6 +106,7 @@ p_no_int receber_atendimentos(Paciente *paciente_atual,int *arquivo_nao_acabou,p
 }
 
 int todas_vazias(p_no_paciente listas[2*N_ESPECIALIDADES]){
+    //CONFERE SE OS INICIOS E FINAIS DAS LISTAS SAO null, SE SIM, RETORNA 1
     for(int i = 0;i< 2*N_ESPECIALIDADES;i++){
         if(listas[i] != NULL){
             return 0;
@@ -110,6 +116,7 @@ int todas_vazias(p_no_paciente listas[2*N_ESPECIALIDADES]){
 }
 
 void liberar_paciente(Paciente *paciente_atual,int relogio){
+    //LIBERA O PACIENTE DO HOSPITAL E DA MEMÓRIA RAM
     if(relogio<12){
         printf("0");
     }
@@ -125,17 +132,18 @@ void liberar_paciente(Paciente *paciente_atual,int relogio){
 }
 
 void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int relogio,int *contador,Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS]){
+    // "ATENDE" O PACIENTE
     p_no_paciente no_atual = filas[fila_atual];
-    p_no_paciente proximo = no_atual->prox;
     Paciente *paciente_atual = no_atual->paciente;
+
     // REMOVE DA FILA DE ATENDIMENTO
-    if (proximo == NULL){
+    if (no_atual->prox == NULL){
         filas[fila_atual] = NULL;
         filas[fila_atual+1] = NULL;
     }else{
-        filas[fila_atual] = proximo;
+        filas[fila_atual] = no_atual->prox;
     }
-
+    //LIBERA OU ADICIONA NO VETOR PARA O PROXIMO ATENDIMENTO
     if (paciente_atual->atendimentos == NULL){
         liberar_paciente(paciente_atual,relogio);
     }else{
@@ -146,29 +154,8 @@ void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int
     free(no_atual);
 }
 
-void imprimir_lista(p_no_paciente aux1){
-    while (aux1 != NULL){
-        p_no_int aux2 = aux1->paciente->atendimentos;
-        printf("%s",aux1->paciente->nome);
-        while(aux2 != NULL){
-            printf(" %d",aux2->dado/2 +1);
-            aux2 = aux2->prox;
-        }
-        aux1 = aux1->prox;
-        printf("\n");
-    }
-}
-
-void imprimir_pacientes(p_no_paciente filas[2*N_ESPECIALIDADES]){
-    for(int i = 0;i<2*N_ESPECIALIDADES;i+=2){
-        printf("%d:\n",i/2 +1);
-        imprimir_lista(filas[i]);
-        printf("\n");
-    }
-    printf("\nCABOU\n");
-}
-
 void adicionar_novas_consultas(Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS],p_no_paciente filas[2*N_ESPECIALIDADES]){
+    //ADICIONA OS PACIENTES EM SUAS DEVIDAS FILAS DE ESPERA
     int especialidade , i = 0;
     while(novas_consultas[i] != NULL){
         especialidade = novas_consultas[i]->atendimentos->dado;
@@ -183,6 +170,7 @@ void adicionar_novas_consultas(Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS]
 }
 
 int comparar(const void *p1,const void *p2){
+    // SERVE PARA AS COMPARAÇÔES DO qsort(), DE stdlib.h
     const Paciente **P1 = (const Paciente **)p1;
     const Paciente **P2 = (const Paciente **)p2;
     return ((*P1)->chegada - (*P2)->chegada);
@@ -192,16 +180,18 @@ int comparar(const void *p1,const void *p2){
 int main(){
     int arquivo_nao_acabou = 1;
 
-    p_no_paciente filas[2*N_ESPECIALIDADES];
+    p_no_paciente filas[2*N_ESPECIALIDADES]; // ARMAZENA PONTEIROS DOS INICIOS E FINAIS DAS FILAS DE PACIENTES
     for(int i = 0;i<2*N_ESPECIALIDADES;i++){
         filas[i] = NULL;
-    // filas[2*i] É O INICIO DE UMA FILA DE PACIENTES E filas[2*i+1] O FIM
+    // filas[2*i] É O INICIO DA FILA i DE PACIENTES E filas[2*i+1] O FIM DA MESMA
     }
 
     char aux;
     int contador = 0;
     scanf(" %c",&aux);
+    
     while(arquivo_nao_acabou == 1){
+        //RECEBE A ENTRADA
         contador += 1;
         Paciente *paciente_atual = malloc(sizeof(Paciente));
         paciente_atual->chegada = contador;
@@ -209,11 +199,14 @@ int main(){
         paciente_atual->prioritario = receber_tipo();
         paciente_atual->atendimentos = receber_atendimentos(paciente_atual,&arquivo_nao_acabou,filas);
     }
+
+
     
     int medicos_por_especialidade[9] = {10,2,5,3,4,7,2,1,4};
     int relogio = 1;
-    Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS];
+    Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS]; // ARMAZENA AS NOVAS CONSULTAS PARA O PROXIMO HORARIO
     do{
+        // ATENDE OS PACIENTES
         contador = 0;
         novas_consultas[0] = NULL;
         for(int i = 0;i<N_ESPECIALIDADES;i++){
@@ -227,15 +220,10 @@ int main(){
         }
         novas_consultas[contador] = NULL;
 
-        while(novas_consultas[contador] != NULL){
-            contador += 1;
-        }
-
-
         qsort(novas_consultas,contador,sizeof(p_no_paciente),comparar);
-
         adicionar_novas_consultas(novas_consultas,filas);
         relogio += 1;
+
     }while(todas_vazias(filas) == 0);
     
     
