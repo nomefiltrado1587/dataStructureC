@@ -28,7 +28,7 @@ typedef struct No_paciente * p_no_paciente;
 
 
 p_no_int adicionar_na_fila_int(p_no_int ant,int especialidade){
-    p_no_int novo = malloc(sizeof(int));
+    p_no_int novo = malloc(sizeof(No_int));
     if (ant != NULL){
         ant->prox = novo;
     }
