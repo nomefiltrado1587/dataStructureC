@@ -138,13 +138,12 @@ void atender_paciente(int aux,p_no_paciente filas[2*N_ESPECIALIDADES],int relogi
 
     if (paciente_atual->atendimentos == NULL){
         liberar_paciente(paciente_atual,relogio);
-        free(no_atual);
     }else{
         novas_consultas[*contador] = paciente_atual;
         *contador += 1;
     }
      
-    
+    free(no_atual);
 }
 
 void imprimir_lista(p_no_paciente aux1){
