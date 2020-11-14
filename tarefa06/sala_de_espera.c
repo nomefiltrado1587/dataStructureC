@@ -124,15 +124,16 @@ void liberar_paciente(Paciente *paciente_atual,int relogio){
     free(paciente_atual);
 }
 
-void atender_paciente(int aux,p_no_paciente filas[2*N_ESPECIALIDADES],int relogio,int *contador,Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS]){
-    p_no_paciente no_atual = filas[aux];
+void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int relogio,int *contador,Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS]){
+    p_no_paciente no_atual = filas[fila_atual];
+    p_no_paciente proximo = no_atual->prox;
     Paciente *paciente_atual = no_atual->paciente;
     // REMOVE DA FILA DE ATENDIMENTO
-    if (no_atual->prox == NULL){
-        filas[aux] = NULL;
-        filas[aux+1] = NULL;
+    if (proximo == NULL){
+        filas[fila_atual] = NULL;
+        filas[fila_atual+1] = NULL;
     }else{
-        filas[aux] = no_atual->prox;
+        filas[fila_atual] = proximo;
     }
 
     if (paciente_atual->atendimentos == NULL){
