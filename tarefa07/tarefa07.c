@@ -40,7 +40,7 @@ p_no inserir(p_no raiz, int valor, char *mensagem) {
     return raiz;
 }
 
-p_no receber_entrada_tokens(p_no raiz){
+p_no receber_tokens_entrada(p_no raiz){
     //LE OS VALORES E MENSAGENS DE CADA TOKEN E OS ARMAZENA EM UMA ARVORE DE BUSCA ATRAVES DA FUNÇÃO inserir()
     char aspas,letra_atual, *mensagem_atual = malloc(MAX_STRING*sizeof(char));
     int contador,valor_atual;
@@ -99,10 +99,16 @@ p_no remover_rec(p_no raiz, int valor) {
         raiz->dir = remover_rec(raiz->dir, valor);
     else {
         free(raiz->mensagem);
-        if (raiz->esq == NULL)
-            return raiz->dir;
-        else if (raiz->dir == NULL)
-            return raiz->esq;
+        if (raiz->esq == NULL){
+            p_no aux = raiz->dir;
+            free(raiz);
+            return aux;
+            }
+        else if (raiz->dir == NULL){
+            p_no aux = raiz->esq;
+            free(raiz);
+            return aux;
+            }
         else
             remover_sucessor(raiz);
     }
@@ -228,7 +234,7 @@ int main(){
 
         raiz = NULL;
         for(int i = 0;i<n;i++){
-            raiz = receber_entrada_tokens(raiz);
+            raiz = receber_tokens_entrada(raiz);
         }
 
         for(int i = 0;i<m;i++){
@@ -244,6 +250,7 @@ int main(){
         printf("\n");
 
         liberar_arvore(raiz);
+        
         arquivo_nao_acabou =  scanf("%d %d",&n,&m);
     }
 }
