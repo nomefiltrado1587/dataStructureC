@@ -175,4 +175,5 @@ int main(){
         scanf(" %c",&tipo_de_entrada);
     }
     printf("\nJornada finalizada. Aqui esta o seu rendimento de hoje\nKm total: %d\nRendimento bruto: %.2lf\nDespesas: %.2lf\nRendimento liquido: %.2lf",km_total,rendimento_bruto,0.4104*km_total+57,3*rendimento_bruto/4-0.4104*km_total -57);
+    free(heap.passageiros);
 }
