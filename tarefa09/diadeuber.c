@@ -43,6 +43,7 @@ Passageiro *criar_passageiro(char *nome_atual,double avaliacao_atual,int x_passa
     novo->y_passageiro = y_passageiro;
     novo->x_destino = x_destino;
     novo->y_destino = y_destino;
+    
     return novo;
 }
 
@@ -85,6 +86,7 @@ void consertar_heap(p_heap heap){
     // CONSERTA O HEAP, DEIXANDO O PAI SEMPRE COM AVALIAÇÂO MAIOR DO QUE SEUS FILHOS
     for (int i = heap->n-1;i>0;i--){
         if(heap->passageiros[(i+1)/2-1]->avaliacao < heap->passageiros[i]->avaliacao){
+
             p_passageiro aux = heap->passageiros[(i+1)/2-1];
             heap->passageiros[(i+1)/2-1] = heap->passageiros[i];
             heap->passageiros[i] = aux;
@@ -109,6 +111,7 @@ void remover_por_nome(char *nome,p_heap heap){
         i++;
     }
     char *aux = heap->passageiros[i]->nome;
+
     remover(i,heap);
     consertar_heap(heap);
     free(aux);
@@ -119,12 +122,16 @@ void receber_passageiro(p_heap heap,int *x_atual,int *y_atual,double *rendimento
     // CALCULA GASTOS E GANHOS, REMOVE O PASSAGEIRO DO HEAP
     *km_total += modulo(heap->passageiros[0]->x_passageiro  -  *x_atual);
     *km_total += modulo(heap->passageiros[0]->y_passageiro  -  *y_atual);
+
     *rendimento_bruto += 1.4*modulo(heap->passageiros[0]->x_destino  -  heap->passageiros[0]->x_passageiro);
     *rendimento_bruto += 1.4*modulo(heap->passageiros[0]->y_destino  -  heap->passageiros[0]->y_passageiro);
+
     *km_total += modulo(heap->passageiros[0]->x_destino  -  heap->passageiros[0]->x_passageiro);
     *km_total += modulo(heap->passageiros[0]->y_destino  -  heap->passageiros[0]->y_passageiro);
+
     *x_atual = heap->passageiros[0]->x_destino;
     *y_atual = heap->passageiros[0]->y_destino;
+
     remover(0,heap);
     consertar_heap(heap);
 }
