@@ -1,0 +1,3 @@
+1c) As duas versões usam a mesma quantidade de multiplicações(embora seja possível criar uma versão recursiva que usa menos)
+    A versão iterativa usa menos memória, já que nao tem chamadas recursivas.
+    

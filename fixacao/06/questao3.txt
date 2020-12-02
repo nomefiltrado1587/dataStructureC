@@ -1,0 +1,6 @@
+a) passando o valor é criada uma cópia dele, que é utilizada na função e depois descartada
+   passando o ponteiro é utilizado o próprio valor
+
+b) Quando queremos alterá-los fora da função e quando eles são muito grandes, e irão demorar para serem copiados
+
+c) Quando não queremos alterá-lo fora da função e quando são pequenos e facilmente copiáveis.
