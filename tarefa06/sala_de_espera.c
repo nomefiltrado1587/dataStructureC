@@ -44,6 +44,7 @@ void adicionar_na_fila_pac(Paciente *paciente,p_no_paciente filas[2*N_ESPECIALID
     if (filas[especialidade] == NULL){
         filas[especialidade] = novo;
         filas[especialidade+1] = novo;
+        novo->prox = NULL;
     }else{
         if(paciente->prioritario == 0){
             filas[especialidade+1]->prox = novo;
