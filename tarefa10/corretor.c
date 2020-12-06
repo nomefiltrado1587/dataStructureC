@@ -129,10 +129,10 @@ int procurar_similares(char palavra[MAX_PALAVRA],Hash *dicionario){
     }
 
     //procura palavras com uma letra a menos do que a palavra que foi inserida
-    for(int j = 0;j<MAX_PALAVRA && achou != 1;j++){
+    for(int j = 0;j<MAX_PALAVRA && achou != 1 && palavra[j]!= '\0';j++){
         copiar_palavra(palavra,palavra_aux);
-        for(int k = j;palavra[k+1]!='\0';k++){
-            palavra_aux[k]=palavra[k+2];
+        for(int k = j;palavra[k]!='\0';k++){
+            palavra_aux[k]=palavra[k+1];
         }
         achou = procurar_no_hash(palavra_aux,dicionario);
     }
