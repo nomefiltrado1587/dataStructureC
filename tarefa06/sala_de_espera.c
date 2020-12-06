@@ -144,6 +144,7 @@ void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int
         filas[fila_atual] = no_atual->prox;
     }
     //LIBERA OU ADICIONA NO VETOR PARA O PROXIMO ATENDIMENTO
+    if(paciente_atual!= NULL){
     if (paciente_atual->atendimentos == NULL){
         liberar_paciente(paciente_atual,relogio);
     }else{
@@ -152,6 +153,7 @@ void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int
     }
      
     free(no_atual);
+    }
 }
 
 void adicionar_novas_consultas(Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS],p_no_paciente filas[2*N_ESPECIALIDADES]){
