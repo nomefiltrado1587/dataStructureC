@@ -18,9 +18,11 @@ typedef struct Hash{
 
 void copiar_palavra(char palavra[MAX_PALAVRA],char * local){
     // COPIA UMA PALAVRA
-    for(int i = 0;palavra[i] != '\0';i++){
+    int i;
+    for(i = 0;palavra[i] != '\0';i++){
         local[i]=palavra[i];
     }
+    local[i] = '\0';
 }
 
 void adicionar_letra(char palavra_base[MAX_PALAVRA],char palavra_resultado[MAX_PALAVRA], char letra, int posicao){
