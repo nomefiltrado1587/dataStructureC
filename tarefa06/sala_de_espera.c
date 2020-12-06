@@ -33,6 +33,7 @@ p_no_int adicionar_na_fila_int(p_no_int ant,int especialidade){
         ant->prox = novo;
     }
     novo->dado = especialidade;
+    novo->prox = NULL;
     return novo;
 }
 
@@ -145,7 +146,7 @@ void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int
         filas[fila_atual] = no_atual->prox;
     }
     //LIBERA OU ADICIONA NO VETOR PARA O PROXIMO ATENDIMENTO
-    if(paciente_atual!= NULL){
+
     if (paciente_atual->atendimentos == NULL){
         liberar_paciente(paciente_atual,relogio);
     }else{
@@ -154,18 +155,19 @@ void atender_paciente(int fila_atual,p_no_paciente filas[2*N_ESPECIALIDADES],int
     }
      
     free(no_atual);
-    }
+    
 }
 
 void adicionar_novas_consultas(Paciente *novas_consultas[MAX_NOVOS_ATENDIMENTOS],p_no_paciente filas[2*N_ESPECIALIDADES]){
     //ADICIONA OS PACIENTES EM SUAS DEVIDAS FILAS DE ESPERA
     int especialidade , i = 0;
+    p_no_int aux;
     while(novas_consultas[i] != NULL){
         especialidade = novas_consultas[i]->atendimentos->dado;
         
-        p_no_int atendimento_atual = novas_consultas[i]->atendimentos;
+        aux = novas_consultas[i]->atendimentos;
         novas_consultas[i]->atendimentos = novas_consultas[i]->atendimentos->prox;
-        free(atendimento_atual);
+        free(aux);
         
         adicionar_na_fila_pac(novas_consultas[i],filas,especialidade);
         i+=1;
