@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
-            "args": ["<testes/caminho1.in"],
+            "args": ["<testes/caminho8.in"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

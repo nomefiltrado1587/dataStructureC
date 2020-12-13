@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-
 typedef struct Vertice {
     double x,y;
-    int eh_lugia;
     struct Vertice *prox;
 } Vertice;
 
@@ -27,15 +25,38 @@ Grafo inicializar_grafo(){
     return grafo;
 }
 
-p_vertice adicionar_vertice(p_vertice lista,double x, double y,int eh_lugia){
+void zerar_vetor(int *v,int n){
+    for (int i = 0;i<n;i++){
+        v[i] = 0;
+    }
+}
+
+void receber_ponto_inicial(p_vertice inicio){
+    double x_inicial,y_inicial;
+    scanf(" %lf %lf", &x_inicial,&y_inicial);
+    inicio->x = x_inicial;
+    inicio->y = y_inicial;
+    inicio->prox = NULL;
+}
+
+p_vertice adicionar_vertice(p_vertice lista,double x, double y){
 
     p_vertice novo = malloc(sizeof(Vertice));
     novo->x = x;
     novo->y = y;
-    novo->eh_lugia = eh_lugia;
     novo->prox =  lista;
 
     return novo;
+}
+
+void liberar_grafo(p_grafo grafo){
+    for(int i = 0;i<grafo->n;i++){
+        free(grafo->vertices[i]);
+        free(grafo->matriz_distancias[i]);
+    }
+    free(grafo->vertices);
+    free(grafo->matriz_distancias);
+
 }
 
 int distancia_inteira(p_vertice no1,p_vertice no2){
@@ -47,7 +68,8 @@ int distancia_inteira(p_vertice no1,p_vertice no2){
     return resultado+1;
 }
 
-void armazenar_vertices_no_grafo(p_grafo grafo, p_vertice lista_de_vertices){
+void armazenar_vertices_no_grafo(p_grafo grafo, p_vertice lista_de_vertices,int quantidade_de_vertices){
+    grafo->n = quantidade_de_vertices;
     grafo->vertices = malloc(sizeof(p_vertice)*grafo->n);
     for(int i = 0;i<grafo->n;i++){
         grafo->vertices[i] = lista_de_vertices;
@@ -55,7 +77,7 @@ void armazenar_vertices_no_grafo(p_grafo grafo, p_vertice lista_de_vertices){
     }
 }
 
-void criar_matriz_de_distancias(p_grafo grafo,int *aresta_min,int *aresta_max){
+void criar_matriz_de_distancias(p_grafo grafo,int *aresta_min,int *aresta_max,int *aresta_atual){
     int i,j,n,distancia_atual;
     n = grafo->n;
 
@@ -79,20 +101,34 @@ void criar_matriz_de_distancias(p_grafo grafo,int *aresta_min,int *aresta_max){
     for (i = 0;i<n;i++){
         grafo->matriz_distancias[i][i] = 0;
     }
+    *aresta_atual = (*aresta_max + *aresta_min)/2;
 }
 
-int ja_foi(int valor,int *ja_foram,int aux){
-    for (int i = 0;i<aux;i++){
-        if(ja_foram[i] == valor){
-            return 1;
+void receber_entrada(p_vertice *lista_de_vertices,p_vertice *lista_de_lugias,int *quantidade_de_vertices,int *quantidade_de_lugias){
+    double x_atual,y_atual;
+    char tipo[15];
+
+    while (scanf(" %lf %lf %s",&x_atual,&y_atual,tipo) > 0){
+        *quantidade_de_vertices += 1;
+        if (tipo[0] == 'L'){
+            *lista_de_lugias = adicionar_vertice(*lista_de_lugias,x_atual,y_atual);
+            *quantidade_de_lugias += 1;
+        }else{
+            *lista_de_vertices = adicionar_vertice(*lista_de_vertices,x_atual,y_atual);
         }
     }
-    return 0;
+    p_vertice aux = *lista_de_lugias;
+    int contador = 0;
+    while(aux->prox != NULL){
+        aux = aux->prox;
+        contador += 1;
+    }
+    aux->prox = *lista_de_vertices;
 }
 
-void calcular_nova_aresta(int *aresta_atual, int *aresta_min,int *aresta_max,int tem_caminho,int *acabou){
+void calcular_nova_aresta(int *aresta_atual, int *aresta_min,int *aresta_max,int *tem_caminho,int *acabou){
     int aux;
-    if(tem_caminho == 1){
+    if(*tem_caminho == 1){
         aux = *aresta_atual;
         *aresta_atual = (*aresta_min + *aresta_atual)/2;
         *aresta_max = aux;
@@ -107,86 +143,67 @@ void calcular_nova_aresta(int *aresta_atual, int *aresta_min,int *aresta_max,int
             *acabou = 2;
         }
     }
+    *tem_caminho = 0;
 }
 
-void testar_se_tem_caminho(Grafo grafo,int *ja_foram,int *aux,int atual,int distancia_max,int *tem_caminho){
-    int tamanho_aresta;
+int chega_em_um_lugia(p_grafo g,int quantidade_de_lugias,int distancia_maxima,int v){
+    for(int i = 0;i<quantidade_de_lugias;i++){
+        if(g->matriz_distancias[i][v]<= distancia_maxima){
+            return 1;
+        }
+    }
+    return 0;
+}
 
-    if(grafo.vertices[atual]->eh_lugia == 1){
-        *tem_caminho = 1;
-    }else{
-        *aux += 1;
-        for(int i = 0;i<grafo.n && *tem_caminho == 0;i++){
-            tamanho_aresta = grafo.matriz_distancias[i][atual];
-            if(tamanho_aresta <= distancia_max && ja_foi(i,ja_foram,*aux )==0 && *tem_caminho == 0 ){
-                ja_foram[*aux-1] = i;
-                testar_se_tem_caminho(grafo, ja_foram,aux,i,distancia_max,tem_caminho);
+int busca_rec(p_grafo g, int *visitado , int v,int quantidade_de_lugias,int distancia_maxima) {
+    int w;
+    if (chega_em_um_lugia(g,quantidade_de_lugias,distancia_maxima,v)){
+        return 1;
+        }
+    visitado[v] = 1;
+    for (w = quantidade_de_lugias; w < g->n; w++){
+        if (g->matriz_distancias[v][w]<= distancia_maxima && !visitado[w]){
+            if (busca_rec(g, visitado , w,quantidade_de_lugias, distancia_maxima)){
+                return 1;
             }
         }
-        *aux -= 1;
-
     }
+    return 0;
 }
 
 int main(){
-    int quantidade_de_vertices = 0;
-    char tipo[15];
-    double x_atual,y_atual;
-    double x_inicial,y_inicial;
-    p_vertice lista_de_vertices = NULL;
-
+    int quantidade_de_vertices = 0,quantidade_de_lugias = 0;
+    p_vertice lista_de_vertices = NULL,lista_de_lugias = NULL;
     Vertice inicio;
-    scanf(" %lf %lf", &x_inicial,&y_inicial);
-    inicio.x = x_inicial;
-    inicio.y = y_inicial;
-    inicio.eh_lugia = 0;
-    inicio.prox = NULL;
 
-    while (scanf(" %lf %lf %s",&x_atual,&y_atual,tipo) > 0){
-        quantidade_de_vertices += 1;
-        if (tipo[0] == 'L'){
-            lista_de_vertices = adicionar_vertice(lista_de_vertices,x_atual,y_atual,1);
-        }else{
-            lista_de_vertices = adicionar_vertice(lista_de_vertices,x_atual,y_atual,0);
-        }
-    }
+    receber_ponto_inicial(&inicio);
+    receber_entrada(&lista_de_vertices,&lista_de_lugias,&quantidade_de_vertices,&quantidade_de_lugias);
+
     Grafo grafo = inicializar_grafo();
-
-    grafo.n = quantidade_de_vertices;
-    armazenar_vertices_no_grafo(&grafo,lista_de_vertices);
     int aresta_min = 2147483647,aresta_max = 0,aresta_atual;
-    criar_matriz_de_distancias(&grafo,&aresta_min,&aresta_max);
 
-    int *ja_foram = malloc((grafo.n+1)*sizeof(int));
-    int aux = 0; // quantos numeros temos em ja_foram
-    int tem_caminho = 0;
-    int acabou = 0;
-    aresta_atual = (aresta_max + aresta_min)/2;
-    //printf("%d %d %d\n",aresta_max, aresta_atual,aresta_min);
-    for(int i = 0;i<quantidade_de_vertices && tem_caminho == 0;i++){
-        ja_foram[aux] = i;
-        aux += 1;
-        if(distancia_inteira(&inicio,grafo.vertices[i])<=aresta_atual){
-            testar_se_tem_caminho(grafo, ja_foram,&aux,i,aresta_atual,&tem_caminho);
-        }
-        aux -= 1;
-    }
-    calcular_nova_aresta(&aresta_atual,&aresta_min,&aresta_max,tem_caminho,&acabou);
-    //printf("%d %d %d\n",aresta_max, aresta_atual,aresta_min);
+    armazenar_vertices_no_grafo(&grafo,lista_de_lugias,quantidade_de_vertices);
+    criar_matriz_de_distancias(&grafo,&aresta_min,&aresta_max,&aresta_atual);
+    int *ja_foram = malloc(grafo.n * sizeof(int));
+    int acabou = 0,tem_caminho = 0;
+
     while(acabou == 0){
-        tem_caminho = 0;
-        for(int i = 0;i<quantidade_de_vertices && tem_caminho == 0;i++){
-            ja_foram[aux] = i;
-            aux += 1;
-            if(distancia_inteira(&inicio,grafo.vertices[i])<=aresta_atual && tem_caminho == 0){
-                testar_se_tem_caminho(grafo, ja_foram,&aux,i,aresta_atual,&tem_caminho);
+        zerar_vetor(ja_foram,quantidade_de_vertices);
+        for(int i = 0;i<quantidade_de_lugias;i++){ // CONFERE SE EXISTE CAMINHO DIRETO DA ORIGEM ATE UM LUGIA
+            if(distancia_inteira(grafo.vertices[i],&inicio)<=aresta_atual){
+                tem_caminho = 1;
             }
-            aux -= 1;
         }
-        //printf("aresta: %d Tem caminho: %d\n",aresta_atual,tem_caminho);
-        calcular_nova_aresta(&aresta_atual,&aresta_min,&aresta_max,tem_caminho,&acabou);
-        //printf("%d %d %d\n",aresta_max, aresta_atual,aresta_min);
+        for(int i = quantidade_de_lugias;i<quantidade_de_vertices && tem_caminho == 0;i++){
+            if(distancia_inteira(&inicio,grafo.vertices[i])<=aresta_atual && tem_caminho == 0){
+                tem_caminho = busca_rec(&grafo, ja_foram , i,quantidade_de_lugias,aresta_atual);
+            }
+        }
+        calcular_nova_aresta(&aresta_atual,&aresta_min,&aresta_max,&tem_caminho,&acabou);
+
     }
+    liberar_grafo(&grafo);
+    free(ja_foram);
     if (acabou == 1){
         printf("%d",aresta_atual);
     }else{
