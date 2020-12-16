@@ -171,6 +171,29 @@ int busca_rec(p_grafo g, int *visitado , int v,int quantidade_de_lugias,int dist
     return 0;
 }
 
+int calcular_distancia(p_grafo grafo,p_vertice inicio,int *aresta_atual,int *aresta_max,int *aresta_min,int quantidade_de_lugias){
+    int *ja_foram = malloc(grafo->n * sizeof(int));
+    int acabou = 0,tem_caminho = 0;
+
+    while(acabou == 0){
+        zerar_vetor(ja_foram,grafo->n);
+        for(int i = 0;i<quantidade_de_lugias;i++){ // CONFERE SE EXISTE CAMINHO DIRETO DA ORIGEM ATE UM LUGIA
+            if(distancia_inteira(grafo->vertices[i],inicio)<=*aresta_atual){
+                tem_caminho = 1;
+            }
+        }
+        for(int i = quantidade_de_lugias;i<grafo->n && tem_caminho == 0;i++){
+            if(distancia_inteira(inicio,grafo->vertices[i])<=*aresta_atual && tem_caminho == 0){
+                tem_caminho = busca_rec(grafo, ja_foram , i,quantidade_de_lugias,*aresta_atual);
+            }
+        }
+        calcular_nova_aresta(aresta_atual,aresta_min,aresta_max,&tem_caminho,&acabou);
+
+    }
+    free(ja_foram);
+    return acabou;
+}
+
 int main(){
     int quantidade_de_vertices = 0,quantidade_de_lugias = 0;
     p_vertice lista_de_vertices = NULL,lista_de_lugias = NULL;
@@ -184,26 +207,9 @@ int main(){
 
     armazenar_vertices_no_grafo(&grafo,lista_de_lugias,quantidade_de_vertices);
     criar_matriz_de_distancias(&grafo,&aresta_min,&aresta_max,&aresta_atual);
-    int *ja_foram = malloc(grafo.n * sizeof(int));
-    int acabou = 0,tem_caminho = 0;
+    int acabou = calcular_distancia(&grafo,&inicio,&aresta_atual,&aresta_max,&aresta_min,quantidade_de_lugias);
 
-    while(acabou == 0){
-        zerar_vetor(ja_foram,quantidade_de_vertices);
-        for(int i = 0;i<quantidade_de_lugias;i++){ // CONFERE SE EXISTE CAMINHO DIRETO DA ORIGEM ATE UM LUGIA
-            if(distancia_inteira(grafo.vertices[i],&inicio)<=aresta_atual){
-                tem_caminho = 1;
-            }
-        }
-        for(int i = quantidade_de_lugias;i<quantidade_de_vertices && tem_caminho == 0;i++){
-            if(distancia_inteira(&inicio,grafo.vertices[i])<=aresta_atual && tem_caminho == 0){
-                tem_caminho = busca_rec(&grafo, ja_foram , i,quantidade_de_lugias,aresta_atual);
-            }
-        }
-        calcular_nova_aresta(&aresta_atual,&aresta_min,&aresta_max,&tem_caminho,&acabou);
-
-    }
     liberar_grafo(&grafo);
-    free(ja_foram);
     if (acabou == 1){
         printf("%d",aresta_atual);
     }else{
