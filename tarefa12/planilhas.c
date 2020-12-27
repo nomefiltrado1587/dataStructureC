@@ -1,108 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "lista.h"
+#include "grafo.h"
 #define MAX_PALAVRA 30
 #define ERRO -2147483648
 #define UNDEFINED -2147483647
 
-typedef struct Lista{
-    int vertice;
-    int dependencia;
-    struct Lista * prox;
-}Lista;
-
-typedef struct Lista *p_lista;
-
-typedef struct Vertice{
-    int valor;
-    p_lista pais;
-    p_lista filhos;
-}Vertice;
-
-typedef Vertice * p_vertice;
-
-typedef struct Grafo{
-    int largura;
-    int total_termos;
-    p_vertice vertices;
-} Grafo;
-
-typedef Grafo * p_grafo;
-
-
-p_lista inserir_na_lista(p_lista lista,int elemento, int sinal){
-    p_lista aux = lista;
-
-    while(aux != NULL){
-        if(aux->vertice == elemento){
-            aux->dependencia += sinal;
-            return lista;
-        }
-        aux = aux->prox;
-    }
-
-
-    p_lista novo = malloc(sizeof(Lista));
-    novo->vertice = elemento;
-    novo->dependencia = sinal;
-    novo->prox = lista;
-    return novo;
-}
-
-void adicionar_dependencia(p_grafo planilha,int posicao, int numero_do_vertice,int sinal){
-    planilha->vertices[posicao].pais = inserir_na_lista(planilha->vertices[posicao].pais,numero_do_vertice,sinal);
-    planilha->vertices[numero_do_vertice].filhos = inserir_na_lista(planilha->vertices[numero_do_vertice].filhos,posicao,sinal);
-}
-
-int eh_dependente(p_grafo planilha, int vertice1, int vertice2){
-    p_lista lista = planilha->vertices[vertice1].pais;
-    while(lista != NULL){
-        if (lista->vertice == vertice2){
-            return 1;
-        }
-        lista = lista->prox;
-    }
-    return 0;
-}
-
-Grafo inicializar_grafo(int total_de_termos,int largura){
-    // INICIALIZA UM GRAFO
-    Grafo grafo;
-    grafo.largura = largura;
-    grafo.total_termos = total_de_termos;
-    grafo.vertices = malloc(total_de_termos*sizeof(Vertice));
-    for (int i = 0;i< total_de_termos;i++){
-        grafo.vertices[i].valor = 0;
-        grafo.vertices[i].pais = NULL;
-        grafo.vertices[i].filhos = NULL;
-    }
-    return grafo;
-}
-
-void liberar_grafo(p_grafo grafo){
-    p_lista aux,prox;
-    for(int i = 0;i< grafo->total_termos;i++){
-        aux = grafo->vertices[i].filhos;
-        while(aux != NULL){
-            prox = aux->prox;
-            free(aux);
-            aux = prox;
-        }
-        aux = grafo->vertices[i].pais;
-        while(aux != NULL){
-            prox = aux->prox;
-            free(aux);
-            aux = prox;
-        }
-    }
-    free(grafo->vertices);
-}
 
 int posicao_x_y(int largura,char x,int y){
+    // CALCULA A POSIÇÃO QUE UMA CÉLULA TEM NO VETOR DO GRAFO
+    // A PARTIR DE SUAS COORDENADAS x E y
     int int_x = (int)(x-'A');
     return int_x+ largura*(y -1);
 }
 
 void imprimir_valor(char x,int y,p_grafo planilha){
+    //IMPRIME O VALOR DE UMA CELULA
     int posicao = posicao_x_y(planilha->largura,x,y);
     int valor = planilha->vertices[posicao].valor;
     if(valor == ERRO){
@@ -113,6 +26,7 @@ void imprimir_valor(char x,int y,p_grafo planilha){
 }
 
 void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal){
+    // ARMAZENA AS RELAÇÕES ENTRE CELULAS CONTIDAS EM UM PARENTESIS DE FORMA RECURSIVA
     char letra_atual;
     int numero_do_vertice, acabou = 0;
     int coluna;
@@ -120,8 +34,6 @@ void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal){
     
     while(acabou == 0){
         fscanf(arquivo,"%c",&letra_atual);
-
-
         if(letra_atual == '-'){
             fscanf(arquivo," %c",&letra_atual);
             if(letra_atual == '('){
@@ -131,7 +43,6 @@ void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal){
                 numero_do_vertice = posicao_x_y(planilha->largura,letra_atual,coluna);
                 adicionar_dependencia(planilha, posicao,numero_do_vertice,(-1)*sinal);
             }
-
 
         }else if(letra_atual == '('){
             receber_parentesis(arquivo,planilha,posicao,sinal);
@@ -155,6 +66,7 @@ void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal){
 }
 
 void ler_termo(FILE *arquivo,p_grafo planilha,int i ,int j, char letra_atual){
+    // LE UM TERMO DO ARQUIVO .csv
     int posicao = i*planilha->largura +j, coluna,numero_vertice;
     if (letra_atual != '='){
         fscanf(arquivo, " %d", &(planilha->vertices[posicao].valor));
@@ -177,12 +89,15 @@ void ler_termo(FILE *arquivo,p_grafo planilha,int i ,int j, char letra_atual){
 }
 
 int buscar_ciclo(p_grafo planilha,int vertice_buscado,int vertice_atual,int *ja_foram){
-
-    if(eh_dependente(planilha, vertice_atual,vertice_buscado) || planilha->vertices[vertice_atual].valor == ERRO){
+    // CONFERE RECURSIVAMENTE SE UM VERTICE FAZ PARTE DE UM CICLO
+    if(eh_dependente(planilha, vertice_atual,vertice_buscado)){
         planilha->vertices[vertice_buscado].valor = ERRO;
         return 1;
     }
-
+    if(planilha->vertices[vertice_atual].valor == ERRO){
+        planilha->vertices[vertice_buscado].valor = ERRO;
+        return 1;
+    }
     ja_foram[vertice_atual] = 1;
     int filho;
     for(p_lista aux = planilha->vertices[vertice_atual].pais ; aux!=NULL ; aux=aux->prox){
@@ -193,11 +108,11 @@ int buscar_ciclo(p_grafo planilha,int vertice_buscado,int vertice_atual,int *ja_
             }
         }
     }
-    
     return 0;
 }
 
 void eh_ciclico(p_grafo planilha, int vertice){
+    // CONFERE SE UM VERTICE É CICLICO, CASO SIM, O DEFINE COMO ERRO
     int *ja_foram = malloc(planilha->total_termos*sizeof(int));
     for (int i = 0;i<planilha->total_termos;i++){
         ja_foram[i] = 0;
@@ -207,21 +122,19 @@ void eh_ciclico(p_grafo planilha, int vertice){
 }
 
 int buscar_erro(p_grafo planilha,int vertice_buscado,int vertice_atual,int *ja_foram){
+    // CONFERE DE FORMA RECURSIVA SE UMA CELULA DEPENDE DE ALGUMA QUE SEJA UM ERRO
     int eh_erro = 0;
    for(int i = 0;i<planilha->total_termos;i++){
        if(eh_dependente(planilha, vertice_atual,i) && planilha->vertices[i].valor == ERRO){
            eh_erro = 1;
        }
    }
-
     if(eh_erro){
-        
         for(int i = 0;i<planilha->total_termos;i++){
             if(ja_foram[i]){
                 planilha->vertices[i].valor = ERRO;
             }
         }
-        
         planilha->vertices[vertice_buscado].valor = ERRO;
         return 1;
     }
@@ -240,6 +153,7 @@ int buscar_erro(p_grafo planilha,int vertice_buscado,int vertice_atual,int *ja_f
 }
 
 void depende_de_ciclico(p_grafo planilha, int vertice){
+    //CONFERE SE UMA CELULA DEPENDE DE ALGUMA QUE ESTEJA MARCADA COMO ERRO
     int *ja_foram = malloc(planilha->total_termos*sizeof(int));
     for (int i = 0;i<planilha->total_termos;i++){
         ja_foram[i] = 0;
@@ -249,6 +163,7 @@ void depende_de_ciclico(p_grafo planilha, int vertice){
 }
 
 void alterar_valor(p_grafo planilha,int posicao,int novo_valor){
+    // ALTERA O VALOR DE UMA CELULA, E DE TODAS QUE DEPENDEM DELA DE FORMA RECURSIVA
     int antigo = planilha->vertices[posicao].valor;
     int variacao = (novo_valor-antigo), aux;
     planilha->vertices[posicao].valor = novo_valor;
@@ -262,6 +177,7 @@ void alterar_valor(p_grafo planilha,int posicao,int novo_valor){
 }
 
 int calcular_vertice(p_grafo planilha, int posicao){
+    // CALCULA O VALOR DE UM VERTICE E DE SEUS PAIS (CASO AINDA ESTEJAM INDEFINIDOS)
     if(planilha->vertices[posicao].valor != UNDEFINED){
         return planilha->vertices[posicao].valor;
     }
@@ -310,11 +226,13 @@ int main(){
     }
     
     // CALCULA OS QUE SAO DEPENDENTES
+    int soma_atual;
     for(int i = 0;i<total_de_termos;i++){
         if(planilha.vertices[i].valor == UNDEFINED){
             planilha.vertices[i].valor = 0;
             for(p_lista pais = planilha.vertices[i].pais;pais != NULL;pais = pais->prox){
-                planilha.vertices[i].valor += calcular_vertice(&planilha,pais->vertice)*pais->dependencia;
+                soma_atual = calcular_vertice(&planilha,pais->vertice);
+                planilha.vertices[i].valor += soma_atual*pais->dependencia;
             }
         }
     } 
