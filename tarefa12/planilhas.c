@@ -24,6 +24,19 @@ void imprimir_valor(char x,int y,p_grafo planilha){
         printf("%c%d: %d\n",x,y,valor);
     }
 }
+void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal);
+
+void receber_expressao(FILE *arquivo,p_grafo p,int posicao,int sinal,char letra ){
+    // AUXILIA EM receber_parentesis
+    int coluna, numero_do_vertice;
+    if(letra == '('){
+        receber_parentesis(arquivo,p,posicao,sinal);
+    }else{
+        fscanf(arquivo,"%d",&coluna);
+        numero_do_vertice = posicao_x_y(p->largura,letra,coluna);
+        adicionar_dependencia(p, posicao,numero_do_vertice,sinal);
+    }
+}
 
 void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal){
     // ARMAZENA AS RELAÇÕES ENTRE CELULAS CONTIDAS EM UM PARENTESIS DE FORMA RECURSIVA
@@ -31,30 +44,16 @@ void receber_parentesis(FILE *arquivo,p_grafo planilha,int posicao,int sinal){
     int numero_do_vertice, acabou = 0;
     int coluna;
     fscanf(arquivo,"%c",&letra_atual);
-    
     while(acabou == 0){
         fscanf(arquivo,"%c",&letra_atual);
         if(letra_atual == '-'){
             fscanf(arquivo," %c",&letra_atual);
-            if(letra_atual == '('){
-                receber_parentesis(arquivo,planilha,posicao,sinal*(-1));
-            }else{
-                fscanf(arquivo,"%d",&coluna);
-                numero_do_vertice = posicao_x_y(planilha->largura,letra_atual,coluna);
-                adicionar_dependencia(planilha, posicao,numero_do_vertice,(-1)*sinal);
-            }
-
+            receber_expressao(arquivo,planilha,posicao,-sinal,letra_atual);
         }else if(letra_atual == '('){
             receber_parentesis(arquivo,planilha,posicao,sinal);
         }else if(letra_atual == '+'){
             fscanf(arquivo," %c",&letra_atual);
-            if(letra_atual == '('){
-                receber_parentesis(arquivo,planilha,posicao,sinal);
-            }else{
-                fscanf(arquivo,"%d",&coluna);
-                numero_do_vertice = posicao_x_y(planilha->largura,letra_atual,coluna);
-                adicionar_dependencia(planilha, posicao,numero_do_vertice,sinal);
-            }
+            receber_expressao(arquivo,planilha,posicao,sinal,letra_atual);
         }else if(letra_atual == ')'){
             acabou = 1;
         }else if(letra_atual != ' '){
@@ -190,6 +189,34 @@ int calcular_vertice(p_grafo planilha, int posicao){
     return somatorio;
 }
 
+void calcular_vertices_indefinidos(p_grafo planilha, int total_de_termos){
+    // DEFINE QUAIS SÃO CICLICOS 
+    for(int i = 0;i<total_de_termos;i++){
+        if(planilha->vertices[i].valor == UNDEFINED){
+            eh_ciclico(planilha,i);
+        }
+    }
+
+    // DEFINE QUAIS DEPENDEM DE CICLICOS
+    for(int i = 0;i<total_de_termos;i++){
+        if(planilha->vertices[i].valor == UNDEFINED){
+            depende_de_ciclico(planilha,i);
+        }
+    }
+    
+    // CALCULA OS QUE SAO DEPENDENTES
+    int soma_atual;
+    for(int i = 0;i<total_de_termos;i++){
+        if(planilha->vertices[i].valor == UNDEFINED){
+            planilha->vertices[i].valor = 0;
+            for(p_lista pais = planilha->vertices[i].pais;pais != NULL;pais = pais->prox){
+                soma_atual = calcular_vertice(planilha,pais->vertice);
+                planilha->vertices[i].valor += soma_atual*pais->dependencia;
+            }
+        }
+    }
+}
+
 int main(){
     int largura,comprimento,valor,total_de_termos,int_y;
     char nome[MAX_PALAVRA],x,operacao_atual,letra_atual;
@@ -210,33 +237,7 @@ int main(){
     }
     fclose(arquivo);
 
-    // DEFINE QUAIS SÃO CICLICOS 
-    for(int i = 0;i<total_de_termos;i++){
-        if(planilha.vertices[i].valor == UNDEFINED){
-            eh_ciclico(&planilha,i);
-        }
-    }
-
-    // DEFINE QUAIS DEPENDEM DE CICLICOS
-    
-    for(int i = 0;i<total_de_termos;i++){
-        if(planilha.vertices[i].valor == UNDEFINED){
-            depende_de_ciclico(&planilha,i);
-        }
-    }
-    
-    // CALCULA OS QUE SAO DEPENDENTES
-    int soma_atual;
-    for(int i = 0;i<total_de_termos;i++){
-        if(planilha.vertices[i].valor == UNDEFINED){
-            planilha.vertices[i].valor = 0;
-            for(p_lista pais = planilha.vertices[i].pais;pais != NULL;pais = pais->prox){
-                soma_atual = calcular_vertice(&planilha,pais->vertice);
-                planilha.vertices[i].valor += soma_atual*pais->dependencia;
-            }
-        }
-    } 
-
+    calcular_vertices_indefinidos(&planilha,total_de_termos);
 
     //REALIZA AS OPERAÇÕES
     while(scanf(" %c",&operacao_atual) > 0){
@@ -252,6 +253,4 @@ int main(){
     }
 
     liberar_grafo(&planilha);
-
-
 }
