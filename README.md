@@ -1,2 +1,1 @@
-# ra195030
-
+## College's first data structure course
